@@ -1,0 +1,18 @@
+{
+  "title": "FredMaia.dev Blog",
+  "author": "Tails Azimuth",
+  "headerTitle": "FredMaia.dev",
+  "description": "A blog created with Next.js and Tailwind.css",
+  "language": "en-us",
+  "siteUrl": "https://fredmaiaa.dev",
+  "siteRepo": "https://github.com/timlrx/tailwind-nextjs-starter-blog",
+  "image": "/static/images/avatar.png",
+  "socialBanner": "/static/images/twitter-card.png",
+  "email": "fredmaiaarantes@gmail.com",
+  "github": "https://github.com/fredmaiaarantes",
+  "twitter": "https://twitter.com/fredmaiaarantes",
+  "facebook": "https://facebook.com/fredmaiaarantes",
+  "youtube": "https://youtube.com",
+  "linkedin": "https://www.linkedin.com/in/fredmaiaarantes",
+  "locale": "en-US"
+}
