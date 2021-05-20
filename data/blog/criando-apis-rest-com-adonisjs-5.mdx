@@ -1,0 +1,497 @@
+---
+title: Criando API's REST com Node, TypeScript e AdonisJS 5
+date: '2020-12-11'
+draft: false
+summary: AdonisJS é um framework Node.JS completo, altamente focado na experiência dos desenvolvedores, estabilidade e velocidade. Criado em 2015, inspirado por frameworks como Laravel e Rails.
+tags: ['Portuguese', 'Development', 'TypeScript', 'Node']
+---
+
+English Version -> https://fredmaia.dev/creating-rest-apis-with-adonisjs-5/
+
+### **Por quê AdonisJS?**
+
+AdonisJS é um framework Node.JS completo, altamente focado na experiência dos desenvolvedores, estabilidade e velocidade. Criado em 2015, inspirado por frameworks como Laravel e Rails. AdonisJS 5 possui recursos como:
+
+* Segurança de tipos (type safety) com suporte de primeira classe para TypeScript. <3
+
+* Edge, um mecanismo de template com todos os recursos de que você precisa para construir páginas web dinâmicas.
+
+* Mapeamento Objeto-Relacional (ORM) SQL robusto com construtor de buscas (Query Builder), inserção de dados iniciais (Seeds), migrações de dados (Migrations) e Modelos de Active Record.
+
+* Roteador HTTP (HTTP router) e suporte de primeira classe para JSON:API.
+
+* Validador de formulários (Form validator) que fornece informações de tipo, juntamente com as validações em tempo de execução.
+
+* Autenticação com múltiplos drivers (Multi Driver Auth), que permite escolher entre sessões, tokens opacos e tokens JWT (JSON Web Token).
+
+* Módulo de verificação de integridade e forte ênfase em segurança na Web.
+
+
+Vamos criar agora um projeto chamado blog-api com AdonisJS 5 para entender alguns de seus conceitos.
+
+### **Pré-requisitos**
+
+AdonisJS 5 requer Node.JS >= 12.0.0, junto com NPM >= 6.0.0. Vamos usar o yarn como nosso gerenciador de pacotes e o Visual Studio Code como nosso editor.
+
+* Node.JS: <https://nodejs.org/en/>
+* Yarn: <https://classic.yarnpkg.com/en/docs/install>
+* VS Code: <https://code.visualstudio.com/>
+
+### **Criando um novo projeto**
+
+Execute o comando abaixo para criar uma nova estrutura de projeto e instalar todas as dependências necessárias.
+
+`$ yarn create adonis-ts-app blog-api-adonisjs-5`
+
+Escolha API Project no terminal e confirme o nome do projeto. Também recomendo aceitar a instalação do ESLint.
+A imagem abaixo mostra a estrutura de um projeto com AdonisJS, seguindo Convenção sobre Configuração (Convention over Configuration), essa estrutura serve como um ótimo ponto de partida para o desenvolvimento de aplicações.
+Você pode ler mais sobre a estrutura do AdonisJS [aqui](https://preview.adonisjs.com/guides/directory-structure).
+
+![Image of AdonisJS Project Structure](/static/images/adonisjs/adonis-structure.png)
+
+Entre no diretório recém-criado e execute o servidor.
+
+`$ cd blog-api-adonisjs-5 && yarn start` (executa *node ace serve --watch*)
+
+Abra seu navegador em `http://localhost:3333`, e você deverá ver um JSON 'Hello World'. Essa resposta é definida de uma forma bem simples em `start/routes.ts`. Execute o seguinte comando para criar um build de produção.
+
+`$ yarn build` (executa *node ace build --production*)
+
+Você pode ver todos os comandos disponíveis executando `node ace --help`.
+
+### **Criando um Controlador (Controller)**
+
+O AdonisJS segue a arquitetura MVC (Modelo-Visão-Controlador / Model-View-Controller) em que os controladores lidam com as solicitações HTTP. Os controladores ficam no diretório `app/Controllers/Http`. O comando abaixo gera um novo controlador para o Post.
+
+`$ node ace make:controller Post`
+
+### **Listando todos os Posts**
+
+Abra o projeto usando o VS Code e adicione um método "index" ao PostsController retornando um array em memória com todos os posts.
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+
+export default class PostsController {
+  public async index () {
+    return [
+      { id: 1, title: 'First Post', content: 'This is my first blog post' },
+      { id: 2, title: 'Second Post', content: 'This is my second blog post' },
+    ]
+  }
+}
+```
+
+Remova o código atual de `routes.ts` e adicione uma nova rota para o método "index". O código abaixo define uma rota para `/posts` usando o método GET. O manipulador de rota (route handler) referencia o método "index" que acabamos de criar.
+
+
+```typescript
+//file: start/routes.ts
+
+import Route from '@ioc:Adonis/Core/Route'
+
+Route.get('posts', 'PostsController.index')
+```
+
+Se você parou o servidor, inicie-o novamente executando `yarn start` e acesse `http://localhost:3333/posts`.
+
+
+![Image of the browser listing Posts](/static/images/adonisjs/get-posts.png)
+Melhor do que acessar pelo navegador, você pode consumir essa API de um cliente REST (REST Client) como o Postman. Postman é
+uma ótima ferramenta e se você não conhece eu sugiro que comece a usá-la para testar e / ou documentar suas APIs REST.
+https://www.postman.com/downloads/
+
+![Image of Postman listing Posts](/static/images/adonisjs/get-posts-postman.png)
+
+### **Criando um novo Post**
+
+Adicione um método `store` ao PostsController para receber os dados e criar um novo post. Os valores virão do
+corpo (body) da solicitação HTTP. Para obter os dados, precisamos extraí-los do objeto `request`.
+
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+...
+public async store ({ request }: HttpContextContract) {
+    const data = request.all()
+    console.log(data)
+}
+```
+
+O método `store` é muito simples no momento, ele apenas imprime os dados do `body` usando `console.log ()`, vamos melhorá-lo mais tarde.
+
+Adicione uma nova rota para o método `store`. O código abaixo define uma rota para `/posts` usando o método HTTP POST.
+
+
+```typescript
+// file: start/routes.ts
+
+import Route from '@ioc:Adonis/Core/Route'
+
+Route.get('posts', 'PostsController.index')
+
+Route.post('posts', 'PostsController.store') //new route
+```
+
+Agora podemos usar o Postman para enviar uma requisição POST para nossa API.
+Antes de enviar a requisição, adicione um cabeçalho definindo o `Content-Type` como `application/json`.
+
+![Image of Postman Adding JSON Header](/static/images/adonisjs/create-post-json-postman.png)
+
+Com isso podemos enviar uma requisição à API para criar um novo post.
+
+![Image of Postman Creating a Post](/static/images/adonisjs/create-post-postman.png)
+
+Enviando esta requisição, você pode ver no console:
+```json
+{ title: 'Third post', content: 'This is my third post' }
+```
+
+Usar `request.all()` funciona, mas este método aceitará quaisquer dados que venham da requisição, por razões de segurança, devemos aceitar apenas os
+campos que sabemos que compõem um objeto post, neste caso título (title) e conteúdo (content). Altere o método `store` para
+usar `request.only()` em vez de `request.all()`.
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+...
+public async store ({ request }: HttpContextContract) {
+    const data = request.only(['title', 'content'])
+    console.log(data)
+}
+```
+
+Se fizermos uma solicitação GET para `/posts`, não podemos ver o novo post, pois apenas o imprimimos no console. Para ficar um pouco mais interessante, vamos manter um `array` de posts na memória e adicionar este novo post ao `array` de posts.
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+
+export default class PostsController {
+  private static posts = [
+    { id: 1, title: 'First Post', content: 'This is my first blog post' },
+    { id: 2, title: 'Second Post', content: 'This is my second blog post' },
+  ]
+
+  public async index () {
+    return PostsController.posts
+  }
+
+  public async store ({ request }: HttpContextContract) {
+    const data = request.only(['title', 'content'])
+    const newId = PostsController.posts.length + 1
+    const post = {
+      id: newId,
+      title: data.title,
+      content: data.content,
+    }
+    PostsController.posts.push(post)
+    return post
+  }
+}
+```
+
+Agora, se enviarmos uma requisição `POST` adicionando o terceiro post, e fizermos uma solicitação `GET` para ver todos, podemos ver o novo post criado.
+
+### **Removendo um Post**
+
+Adicione um método `destroy` ao `PostsController`. Para deletar uma postagem, vamos enviar uma requisição `DELETE` para `/posts/:id`
+por exemplo `/posts/1` passando o id do post como parâmetro. Para obter o parâmetro `id`, devemos receber um objeto `params` e extrair dele.
+Assim que tivermos o `id` como um número, filtramos o `array` de posts para remover o objeto com o id recebido.
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+...
+public async destroy ({ params }: HttpContextContract) {
+  const postId = Number(params.id) //transform to number
+  PostsController.posts = PostsController.posts.filter(p => p.id !== postId)
+}
+```
+
+Vamos testar? Ainda não. Precisamos registrar uma nova rota para a exclusão de posts.
+
+```typescript
+// file: start/routes.ts
+
+import Route from '@ioc:Adonis/Core/Route'
+
+Route.get('posts', 'PostsController.index')
+
+Route.post('posts', 'PostsController.store')
+
+Route.delete('posts/:id', 'PostsController.destroy') //new route
+```
+
+Agora podemos enviar uma requisição `DELETE` para a API remover um post.
+
+![Image of Postman Deleting a Post](/static/images/adonisjs/delete-post-postman.png)
+
+### **Buscando um Post**
+
+Adicione um método `show` ao `PostsController`. Para buscar um post iremos enviar uma requisição `GET` para `/posts/:id`
+passando o id do post como parâmetro. Bem, já sabemos como fazer isso.
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+...
+public async show ({ params }: HttpContextContract) {
+  const postId = Number(params.id)
+  return PostsController.posts.find(p => p.id === postId)
+}
+```
+
+Muito simples, certo? Vamos evoluir um pouco. O AdonisJS tem várias convenções e uma delas é relacionada às rotas.
+
+### **Recursos de rota (Route resources)**
+
+AdonisJS fornece um atalho para definir todas as rotas RESTful usando Route resources.
+
+Se implementarmos todas as operações de CRUD (criar, ler, atualizar, excluir), teremos um mapeamento para cada uma delas e
+se usarmos o Adonis Template Engine (Edge), precisaremos de ainda mais mapeamentos para navegar entre as páginas. Para simplificar isso, podemos
+usar o método `Route.resource()`. Substitua o seu `routes.ts` pelo código abaixo.
+
+```typescript
+// file: start/routes.ts
+
+import Route from '@ioc:Adonis/Core/Route'
+
+Route.resource('posts', 'PostsController')
+```
+
+O código acima registra as seguintes rotas junto aos seus métodos do controller.
+
+![Image of AdonisJS CRUD Routes](/static/images/adonisjs/routes-adonisjs.png)
+
+No entanto, ao criar uma API, não precisamos de rotas para exibir nenhuma página como `create` e `edit`.
+Podemos removê-los usando o método `apiOnly()`.
+
+```typescript
+// file: start/routes.ts
+
+import Route from '@ioc:Adonis/Core/Route'
+
+Route.resource('posts', 'PostsController').apiOnly()
+```
+
+Nossas rotas atuais agora são as seguintes:
+
+![Image of AdonisJS CRUD API Only Routes](/static/images/adonisjs/routes-api-adonisjs.png)
+
+Ainda temos o método `update` registrado para `PUT` e `PATCH`, mas não o implementamos (dever de casa?), você pode removê-lo
+alterando o código do `routes.ts` para:
+
+```typescript
+// file: start/routes.ts
+
+import Route from '@ioc:Adonis/Core/Route'
+
+Route.resource('posts', 'PostsController')
+  .except(['update'])
+  .apiOnly()
+```
+
+Ótimo! Você pode estar se perguntando, que tal usar um banco de dados? Cada vez que reiniciamos o servidor os posts registrados são perdidos
+e voltam aos valores originais. Vamos dar esse próximo passo, continue comigo. :)
+
+## **Adonis Database ORM**
+
+AdonisJS 5 tem suporte de primeira classe para bancos de dados SQL. A camada de banco de dados do framework (Lucid) vem com
+um conjunto de ferramentas versátil, permitindo-nos construir aplicativos orientados a dados de forma rápida e fácil. Lucid vem com uma implementação
+do padrão Active Record e suporta os principais bancos de dados relacionais.
+
+### **Configurando o Lucid**
+
+Para instalar e inicializar o Lucid, execute os comandos abaixo:
+
+`$ yarn add @adonisjs/lucid@alpha`
+
+`$ node ace invoke @adonisjs/lucid`
+
+Os comandos acima criarão o arquivo de configuração padrão e registrarão `@adonisjs/lucid` ao array de provedores (providers).
+Iremos usar o SQLite como nosso banco de dados, você pode instalá-lo com o comando abaixo:
+
+`$ yarn -D add sqlite3`
+
+Em `config/database.ts` você pode ver as opções de configuração. Existem exemplos para diversos
+bancos de dados, mas o que define a opção escolhida é seu arquivo `.env`. Certifique-se de que ele tem a propriedade
+`DB_CONNECTION=sqlite`.
+
+O arquivo de banco de dados fica dentro da pasta `tmp`. Portanto, crie o diretório `tmp` dentro da raíz do seu projeto.
+
+`$ mkdir tmp`
+
+### **Criando o Post model**
+
+Para ter certeza de que seus comandos estão atualizados, construa o projeto com `yarn build`.
+Em seguida, execute o seguinte comando para criar seu primeiro modelo de dados:
+
+`$ node ace make:model Post`
+
+Ele criará um novo modelo no diretório `app/Models` com o seguinte conteúdo:
+
+```typescript
+// file: app/Models/Post.ts
+
+import { DateTime } from 'luxon'
+import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+
+export default class Post extends BaseModel {
+  @column({ isPrimary: true })
+  public id: number
+
+  @column.dateTime({ autoCreate: true })
+  public createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  public updatedAt: DateTime
+}
+```
+
+Esta é uma classe padrão, você pode remover as propriedades se precisar. No nosso caso, vamos mantê-las, e iremos
+apenas adicionar duas novas propriedades para o título e o conteúdo.
+
+```typescript
+// file: app/Models/Post.ts
+
+import { DateTime } from 'luxon'
+import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+
+export default class Post extends BaseModel {
+  @column({ isPrimary: true })
+  public id: number
+
+  @column()
+  public title: string
+
+  @column()
+  public content: string
+
+  @column.dateTime({ autoCreate: true })
+  public createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  public updatedAt: DateTime
+}
+```
+
+Nós criamos o modelo de post e seguindo a convenção do AdonisJS ele o mapeia automaticamente para uma tabela de banco de dados chamada `posts`.
+Esta tabela não é criada automaticamente pelo Adonis, precisamos usar as migrações (migrations) para isso.
+
+### **Migrações de Esquemas (Schema Migrations)**
+
+Schema migrations oferecem uma API robusta para evoluir e rastrear mudanças no banco de dados. Você pode criar / modificar o banco de dados
+apenas escrevendo Javascript / TypeScript.
+
+Vamos executar o seguinte comando para criar um novo arquivo de migração:
+
+`$ node ace make:migration posts`
+
+Isso cria um arquivo em `database/migrations`, no meu caso chamado `1594401640375_posts.ts`. O arquivo terá as colunas padrões que existiam no modelo de exemplo do Adonis.
+
+ ```typescript
+ // file: database/migrations/1594401640375_posts.ts
+
+ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+
+ export default class Posts extends BaseSchema {
+   protected tableName = 'posts'
+
+   public async up () {
+     this.schema.createTable(this.tableName, (table) => {
+       table.increments('id')
+       table.timestamps(true)
+     })
+   }
+
+   public async down () {
+     this.schema.dropTable(this.tableName)
+   }
+ }
+ ```
+
+Em seguida, adicionamos as colunas de title e content. Pelo que eu sei, o AdonisJS não sincroniza seu modelo com o
+arquivo de migrations (acho que Rails faz isso), precisamos adicioná-los manualmente. Então, vamos lá.
+
+```typescript
+// file: database/migrations/1594401640375_posts.ts
+
+import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+
+export default class Posts extends BaseSchema {
+  protected tableName = 'posts'
+
+  public async up () {
+    this.schema.createTable(this.tableName, (table) => {
+      table.increments('id')
+      table.string('title').notNullable()
+      table.string('content').notNullable()
+      table.timestamps(true)
+    })
+  }
+
+  public async down () {
+    this.schema.dropTable(this.tableName)
+  }
+}
+```
+
+Com o código de migrations concluído, vamos construir o aplicativo e aplicá-lo. Execute o comando abaixo:
+
+`$ yarn build && node ace migration: run`
+
+Se você executar novamente o mesmo comando, o Lucid mostrará que as migrações estão atualizadas. Tudo certo!
+Agora podemos mudar nosso `PostsController` para usar o modelo `Post`.
+
+## **Usando o modelo Post no Controller**
+
+O projeto está usando um array na memória para persistir os dados. Acabamos de criar nosso modelo de post usando o Lucid e
+configuramos o banco de dados SQLite então, vamos usá-lo!
+
+Altere o método `store` do `PostsController` para o código abaixo:
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+...
+public async store ({ request }: HttpContextContract) {
+    const data = request.only(['title', 'content'])
+    const post = {
+      title: data.title,
+      content: data.content,
+    }
+    return await Post.create(post)
+}
+```
+
+Removemos a linha que estávamos criando o Id e, em vez de adicionar o novo post no array, o criamos usando
+o método `Post.create()`. Você pode testá-lo usando as mesmas requisições que usamos antes com o Postman. Isso funcionando,
+poderemos listar todas os posts.
+Vamos mudar os métodos `index` e `show` para buscar os posts do banco de dados.
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+...
+public async index () {
+  return await Post.all()
+}
+
+public async show ({ params }: HttpContextContract) {
+    return await Post.find(params.id)
+}
+```
+
+O último é o método `destroy`. Precisamos buscar a postagem e, em seguida, podemos excluí-la.
+
+```typescript
+// file: app/Controllers/Http/PostsController.ts
+...
+public async destroy ({ params }: HttpContextContract) {
+    const post = await Post.find(params.id)
+    post?.delete()
+}
+```
+
+Isso é tudo! Você pode encontrar o projeto completo no meu Github:
+https://github.com/fredmaiaarantes/blog-api-adonisjs-5
+
+Temos muito mais a explorar sobre o AdonisJS 5, como: validações (validations), relacionamento entre modelos (model relations),
+construtor de buscas (query builder), inserção de dados com `seeds`, testes, autenticação, e por aí vai. Me avise caso queira aprender mais.
+
+**Tem algum feedback ou sugestão? Deixe um comentário abaixo. Be kind. :)**
