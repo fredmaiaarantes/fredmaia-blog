@@ -1,4 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
+import { ANALYTICS_ID } from '@/lib/utils/constants'
 class MyDocument extends Document {
   render() {
     return (
@@ -61,6 +62,23 @@ class MyDocument extends Document {
             integrity="sha384-t5CR+zwDAROtph0PXGte6ia8heboACF9R5l/DiY+WZ3P2lxNgvJkQk5n7GPvLMYw"
             crossOrigin="anonymous"
           />
+          {/*Global site tag (gtag.js) - Google Analytics*/}
+          {ANALYTICS_ID && (
+            <>
+              <script async src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}`} />
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+    
+                    gtag('config', '${ANALYTICS_ID}');
+                  `,
+                }}
+              />
+            </>
+          )}
         </Head>
         <body className="antialiased text-black bg-white dark:bg-gray-900 dark:text-white">
           <Main />
