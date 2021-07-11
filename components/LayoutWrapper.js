@@ -13,6 +13,7 @@ const Logo = ({ theme }) => (
     src={`/static/images/logo-${theme}.png`}
     alt={siteMetadata.headerTitle}
     title={siteMetadata.headerTitle}
+    className="w-48"
   />
 )
 

@@ -67,14 +67,14 @@ export default function About() {
               </a>
               , where we do interviews and share our experience living abroad.
             </p>
-            <div className="pt-8 prose dark:prose-dark max-w-none xl:col-span-2">
-              <iframe
-                title="Fred Travel Map"
-                src="https://www.google.com/maps/d/u/0/embed?mid=1Evn-GhfPxEptsutoiNJDhK8OJ4LP4gNQ"
-                width="100%"
-                height="320"
-              />
-            </div>
+            {/*<div className="pt-8 prose dark:prose-dark max-w-none xl:col-span-2">*/}
+            {/*  <iframe*/}
+            {/*    title="Fred Travel Map"*/}
+            {/*    src="https://www.google.com/maps/d/u/0/embed?mid=1Evn-GhfPxEptsutoiNJDhK8OJ4LP4gNQ"*/}
+            {/*    width="100%"*/}
+            {/*    height="320"*/}
+            {/*  />*/}
+            {/*</div>*/}
           </div>
         </div>
       </div>
