@@ -1,11 +1,28 @@
 const projectsData = [
   {
+    title: '[Youtube] Viajando o Mundo Como Programador e Nômade Digital',
+    subtitle: 'Convidado - Canal do Filipe Mesquita',
+    description: `O bate papo de hoje é com Fred Maia, programador e nômade digital. Ele trabalha remoto como programador e tem a liberdade de viajar enquanto trabalha. Ele já morou em várias partes da Irlanda e Portugal, e está planejando passar um tempo viajando pelo Brasil e depois para o Canadá.`,
+    imgSrc: '/static/images/nomadismo-filipe-mesquita.jpeg',
+    href: 'https://www.youtube.com/watch?v=RzMM45YXxZU&t=150s',
+    date: '28 de Agosto de 2021',
+  },
+  {
+    title: '[Podcast] Devs Pelo Mundo',
+    subtitle: 'Convidado -  Taverna Da Programação - Ep. 028',
+    description: `Ahoy visitante, entre sem deixar a porta da Taverna bater! Siiiim, hoje a Taverna abriu o mapa mundi e decidiu fazer uma navegação global, falando com pessoas que trabalham com tecnologia por este mundão à fora. Vamos descobrir quais foram as suas motivações de irem descobrir novos mundos e os desafios que esta jornada os reservou! E aí, todos a bordo?`,
+    imgSrc: '/static/images/EP028-bg.png',
+    href:
+      'https://open.spotify.com/episode/5phRSEGN6EGoOjnjh1R8Rp?si=29scJJjgRKar31rxMMZScw&dl_branch=1',
+    date: '10 de Agosto de 2021',
+  },
+  {
     title: '[Podcast] Um nômade Digital em Portugal',
     subtitle: 'Convidado -  Dev em Portugal - Ep. 5',
     description: `Nesse episódio converso com Fred Maia, que é nômade digital e está passando uma temporada em Portugal. O Fred morou na Irlanda por alguns anos e conversamos um pouco sobre essa vida de nômade, sobre as comparações entre Irlanda e Portugal.`,
     imgSrc: '/static/images/dev-em-portugal.jpg',
     href:
-      'https://anchor.fm/devemportugal/episodes/5---Um-nmade-Digital-em-Portugal-Fred-Maia-erea5g',
+      'https://open.spotify.com/episode/3KxVbfajHrnYb1mpF7nrK8?si=_JcH5FTSQj6H5j-iY5NGJQ&dl_branch=1',
     date: '05 de Março de 2021',
   },
   {
