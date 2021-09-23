@@ -6,25 +6,25 @@ summary: AdonisJS is a complete Node.JS framework highly focused on developer er
 tags: ['English', 'Development', 'TypeScript', 'Node']
 ---
 
-Portuguesee Version -> https://fredmaia.dev/blog/criando-apis-rest-com-adonisjs-5/
+Portuguese Version -> https://fredmaia.dev/blog/criando-apis-rest-com-adonisjs-5/
 
 ### **Why AdonisJS?**
 
 AdonisJS is a complete Node.JS framework highly focused on developer ergonomics, stability and speed. Created in 2015, inspired by frameworks like Laravel and Rails. AdonisJS 5 comes with ton of features like:
 
-* Type safety with first class support for TypeScript. <3
+- Type safety with first class support for TypeScript. <3
 
-* Edge, a template engine with all the features you need to construct dynamic webpages.
+- Edge, a template engine with all the features you need to construct dynamic webpages.
 
-* A robust SQL ORM with Query Builder, Seeds, Migrations and Active Record Models.
+- A robust SQL ORM with Query Builder, Seeds, Migrations and Active Record Models.
 
-* HTTP router and first class support for JSON:API.
+- HTTP router and first class support for JSON:API.
 
-* Form validator that provides type information, along with the runtime validations.
+- Form validator that provides type information, along with the runtime validations.
 
-* Multi Driver Auth which let you choose between Sessions, Opaque tokens and JWT tokens.
+- Multi Driver Auth which let you choose between Sessions, Opaque tokens and JWT tokens.
 
-* Inbuilt health check module and strong emphasis on Web security.
+- Inbuilt health check module and strong emphasis on Web security.
 
 We are going to create now a blog-api project with AdonisJS 5 to understand some of its concepts.
 
@@ -32,9 +32,9 @@ We are going to create now a blog-api project with AdonisJS 5 to understand some
 
 AdonisJS 5 requires Node.JS >= 12.0.0, along with NPM >= 6.0.0. We are going to use Yarn as our package manager and Visual Studio Code as our editor.
 
-* Node.JS: <https://nodejs.org/en/>
-* Yarn: <https://classic.yarnpkg.com/en/docs/install>
-* VS Code: <https://code.visualstudio.com/>
+- Node.JS: <https://nodejs.org/en/>
+- Yarn: <https://classic.yarnpkg.com/en/docs/install>
+- VS Code: <https://code.visualstudio.com/>
 
 ### **Creating a New Project**
 
@@ -50,11 +50,11 @@ You can read more about it [here](https://preview.adonisjs.com/guides/directory-
 
 Enter in the newly created directory and run the development server.
 
-`$ cd blog-api-adonisjs-5 && yarn start` (it runs *node ace serve --watch*)
+`$ cd blog-api-adonisjs-5 && yarn start` (it runs _node ace serve --watch_)
 
 Open your browser on `http://localhost:3333`, and you should see a JSON 'Hello World'. This response is simple defined in `start/routes.ts`. Run the following command to create a production build.
 
-`$ yarn build` (it runs *node ace build --production*)
+`$ yarn build` (it runs _node ace build --production_)
 
 You can view all the available commands by running `node ace --help`.
 
@@ -72,7 +72,7 @@ Open the project using VS Code and add an index method to the PostsController th
 // file: app/Controllers/Http/PostsController.ts
 
 export default class PostsController {
-  public async index () {
+  public async index() {
     return [
       { id: 1, title: 'First Post', content: 'This is my first blog post' },
       { id: 2, title: 'Second Post', content: 'This is my second blog post' },
@@ -82,7 +82,6 @@ export default class PostsController {
 ```
 
 Remove the current code from the `routes.ts` and add a new route for the index method. The code below defines a route to `/posts` using the GET method. The route handler references to the index method we just created.
-
 
 ```typescript
 //file: start/routes.ts
@@ -120,7 +119,6 @@ we will improve it later.
 
 Add a new route to the `store` method. The code below defines a route to `/posts` using the POST HTTP method.
 
-
 ```typescript
 // file: start/routes.ts
 
@@ -141,8 +139,9 @@ With that we can send a request to the API to create a new post.
 ![Image of Postman Creating a Post](/static/images/adonisjs/create-post-postman.png)
 
 Sending this request you can see on the console:
+
 ```json
-{ title: 'Third post', content: 'This is my third post' }
+{ "title": "Third post", "content": "This is my third post" }
 ```
 
 Using `request.all()` works fine but this method will accept any coming data, for security reasons we should accept only the
@@ -169,11 +168,11 @@ export default class PostsController {
     { id: 2, title: 'Second Post', content: 'This is my second blog post' },
   ]
 
-  public async index () {
+  public async index() {
     return PostsController.posts
   }
 
-  public async store ({ request }: HttpContextContract) {
+  public async store({ request }: HttpContextContract) {
     const data = request.only(['title', 'content'])
     const newId = PostsController.posts.length + 1
     const post = {
@@ -283,9 +282,7 @@ changing the routes.ts code to the below.
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.resource('posts', 'PostsController')
-  .except(['update'])
-  .apiOnly()
+Route.resource('posts', 'PostsController').except(['update']).apiOnly()
 ```
 
 Great! You may be wondering how about using a database? Every time we restart the server the posts are reverted
@@ -385,28 +382,28 @@ Let's execute the following command to create a new migration file.
 `$ node ace make:migration posts`
 
 This creates a file in `database/migrations`, in my case called `1594401640375_posts.ts`. The file will have the
- boilerplate with the default columns.
+boilerplate with the default columns.
 
- ```typescript
- // file: database/migrations/1594401640375_posts.ts
+```typescript
+// file: database/migrations/1594401640375_posts.ts
 
- import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
- export default class Posts extends BaseSchema {
-   protected tableName = 'posts'
+export default class Posts extends BaseSchema {
+  protected tableName = 'posts'
 
-   public async up () {
-     this.schema.createTable(this.tableName, (table) => {
-       table.increments('id')
-       table.timestamps(true)
-     })
-   }
+  public async up() {
+    this.schema.createTable(this.tableName, (table) => {
+      table.increments('id')
+      table.timestamps(true)
+    })
+  }
 
-   public async down () {
-     this.schema.dropTable(this.tableName)
-   }
- }
- ```
+  public async down() {
+    this.schema.dropTable(this.tableName)
+  }
+}
+```
 
 Next, we add the columns for title and content. As far as I know, AdonisJS doesn't sync your model with the
 migrations file (I think Rails does that), we need to add them manually. So, let's do it.
@@ -419,7 +416,7 @@ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 export default class Posts extends BaseSchema {
   protected tableName = 'posts'
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('title').notNullable()
@@ -428,7 +425,7 @@ export default class Posts extends BaseSchema {
     })
   }
 
-  public async down () {
+  public async down() {
     this.schema.dropTable(this.tableName)
   }
 }
@@ -444,7 +441,7 @@ Now we can change our PostsController to use the Post model.
 ## **Using the Post model on the Controller**
 
 The project is using the boring in memory array to persist data. We just created our post model using Lucid and
- we setup SQLite database so, let's use it!
+we setup SQLite database so, let's use it!
 
 Change the PostsController `store` method to the code below.
 
