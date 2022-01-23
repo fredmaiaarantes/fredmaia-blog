@@ -1,8 +1,7 @@
 const headerNavLinks = [
-  { href: '/blog', title: 'Blog' },
-  { href: '/tags', title: 'Tags' },
+  { href: '/', title: 'Home' },
   { href: '/content', title: 'Conteúdos' },
-  { href: '/about', title: 'Sobre' },
+  { href: 'https://dev.to/fredmaiaarantes', title: 'Blog' },
 ]
 
 export default headerNavLinks

@@ -1,95 +1,59 @@
-import Link from '@/components/Link'
-import { PageSeo } from '@/components/SEO'
-import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
-import { getAllFilesFrontMatter } from '@/lib/mdx'
+import SocialIcon from '@/components/social-icons'
+import { PageSeo } from '@/components/SEO'
 
-const MAX_DISPLAY = 5
-const postDateTemplate = { year: 'numeric', month: 'long', day: 'numeric' }
-
-export async function getStaticProps() {
-  const posts = await getAllFilesFrontMatter('blog')
-
-  return { props: { posts } }
-}
-
-export default function Home({ posts }) {
+export default function Index() {
   return (
     <>
       <PageSeo
-        title={siteMetadata.title}
-        description={siteMetadata.description}
-        url={siteMetadata.siteUrl}
+        title={`About - ${siteMetadata.author}`}
+        description={`About me - ${siteMetadata.author}`}
+        url={`${siteMetadata.siteUrl}/about`}
       />
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-          {!posts.length && 'No posts found.'}
-          {posts.slice(0, MAX_DISPLAY).map((frontMatter) => {
-            const { slug, date, title, summary, tags } = frontMatter
-            return (
-              <li key={slug} className="py-12">
-                <article>
-                  <div className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
-                    <div className="space-y-5 xl:col-span-3">
-                      <div className="space-y-6">
-                        <div>
-                          <h2 className="text-2xl font-bold leading-8 tracking-tight">
-                            <Link
-                              href={`/blog/${slug}`}
-                              className="text-gray-900 dark:text-gray-100"
-                            >
-                              {title}
-                            </Link>
-                          </h2>
-                          <div className="flex flex-wrap">
-                            {tags.map((tag) => (
-                              <Tag key={tag} text={tag} />
-                            ))}
-                          </div>
-                        </div>
-                        <div className="prose text-gray-500 max-w-none dark:text-gray-400">
-                          {summary}
-                        </div>
-                      </div>
-                      <div className="text-base font-medium leading-6">
-                        <Link
-                          href={`/blog/${slug}`}
-                          className="text-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-                          aria-label={`Read "${title}"`}
-                        >
-                          Read more &rarr;
-                        </Link>
-                      </div>
-                      <dl>
-                        <dt className="sr-only">Published on</dt>
-                        <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                          <time dateTime={date}>
-                            {new Date(date).toLocaleDateString(
-                              siteMetadata.locale,
-                              postDateTemplate
-                            )}
-                          </time>
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </article>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-      {posts.length > MAX_DISPLAY && (
-        <div className="flex justify-end text-base font-medium leading-6">
-          <Link
-            href="/blog"
-            className="text-blue-500 hover:text-blue-600 dark:hover:text-blue-400"
-            aria-label="all posts"
-          >
-            All Posts &rarr;
-          </Link>
+      <div className="divide-y">
+        <div className="pt-6 pb-8 space-y-2 md:space-y-5">
+          <h1 className="text-2xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
+            {siteMetadata.author}
+          </h1>
         </div>
-      )}
+        <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
+          <div className="flex flex-col items-center pt-8 space-x-2">
+            <img src={siteMetadata.image} alt="avatar" className="w-48 h-48 rounded-full" />
+            <div className="pt-4 text-gray-500 dark:text-gray-400">
+              Tech Lead & Developer at MeteorJS
+            </div>
+            <div className="text-gray-500 dark:text-gray-400">Co-Founder at A Gestoria</div>
+            <div className="flex pt-6 space-x-3">
+              <SocialIcon kind="devTo" href={siteMetadata.devTo} />
+              <SocialIcon kind="twitter" href={siteMetadata.twitter} />
+              <SocialIcon kind="linkedin" href={siteMetadata.linkedin} />
+              <SocialIcon kind="github" href={siteMetadata.github} />
+            </div>
+          </div>
+          <div className="text-lg pt-8 pb-8 prose dark:prose-dark max-w-none xl:col-span-2">
+            <p>
+              Software developer since 2008, Tech Lead and Developer at{' '}
+              <a href="https://meteorjs.com" target="_blank" rel="noreferrer">
+                MeteorJS
+              </a>
+              . Co-founder and Technology Specialist at{' '}
+              <a href="https://agestoria.com" target="_blank" rel="noreferrer">
+                A Gestoria
+              </a>
+              .
+            </p>
+            <p>
+              Brazilian, lived in Ireland for more than 3 years, in Portugal for about 1 year and
+              today lives the dream of being a digital nomad.
+            </p>
+            <p>
+              Worked in amazing Brazilian companies such as Caelum, TecSinapse, and Petrobras, as
+              well as multinationals such as Equifax and LeasePlan in Ireland. Has extensive
+              experience in Java, JavaScript, and TypeScript.
+            </p>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
